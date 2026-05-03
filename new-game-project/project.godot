@@ -21,6 +21,7 @@ ZoneManager="res://src/state/zone_manager.gd"
 EnergyManager="res://src/state/energy_manager.gd"
 CombatResolver="res://src/state/combat_resolver.gd"
 ShieldManager="res://src/state/shield_manager.gd"
+KeywordHandler="res://src/state/keyword_handler.gd"
 DBManager="res://db/db_manager.gd"
 
 [physics]
