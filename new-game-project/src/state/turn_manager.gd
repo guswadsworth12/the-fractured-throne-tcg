@@ -15,8 +15,18 @@ const PHASE_END := 6
 signal phase_started(phase: int, subphase: int)
 signal phase_changed(old_phase: int, new_phase: int)
 signal end_phase_started()
+signal attack_declared(attacker: CardData, defender: CardData)
 signal turn_started(player: int)
 signal turn_ended(player: int)
+
+## Minimal CardData for TurnManager signals
+class CardData:
+	var id: String = ""
+	var name: String = ""
+	var rank: int = 0
+	var faction: String = ""
+	var power: int = 0
+	var keywords: Array = []
 
 var current_phase: int = 0
 var current_subphase: int = 0
@@ -30,6 +40,9 @@ func start_game() -> void:
 	current_subphase = 0
 	current_player = 0
 	emit_signal("phase_started", current_phase, current_subphase)
+
+func declare_attack(attacker: CardData, defender: CardData) -> void:
+	emit_signal("attack_declared", attacker, defender)
 
 func advance_phase() -> void:
 	var old_phase := current_phase
