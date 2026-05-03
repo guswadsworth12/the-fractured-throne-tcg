@@ -208,7 +208,7 @@ func _connect_to_turn_manager() -> void:
 			tm.phase_started.connect(_on_phase_started)
 
 ## Handles Phase 0 (Phase 0B: Refresh Phase) to untap backline units
-func _on_phase_started(phase: int, subphase: int) -> void:
+func _on_phase_started(phase: int, _subphase: int) -> void:
 	if phase == 0:
 		_untap_all_backline_units()
 #endregion
@@ -505,7 +505,7 @@ func trigger_singularity(player: int) -> bool:
 #region PUBLIC API - DRAKESWORN BOND
 ## Handles Drake unit destruction — halves surviving partner's Power.
 ## Emit drakesworn_bond_broken for CombatResolver to apply Power reduction.
-func handle_drakesworn_bond_break(player: int, destroyed_card: CardData, surviving_card: CardData) -> void:
+func handle_drakesworn_bond_break(player: int, _destroyed_card: CardData, surviving_card: CardData) -> void:
 	emit_signal("drakesworn_bond_broken", player, surviving_card)
 #endregion
 
