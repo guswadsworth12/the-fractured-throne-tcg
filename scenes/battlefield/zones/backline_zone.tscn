@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid:// backline_zone_tsx"]
+
+[node name="BacklineZone" type="HBoxContainer"]
+
+[node name="Slot0" type="Control" parent="."]
+layout_mode = 2
+
+[node name="Slot1" type="Control" parent="."]
+layout_mode = 2
+
+[node name="Slot2" type="Control" parent="."]
+layout_mode = 2
+
+[node name="Slot3" type="Control" parent="."]
+layout_mode = 2

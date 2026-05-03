@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid:// hud_tsx"]
+
+[node name="HUD" type="CanvasLayer"]
+
+[node name="EnergyCount" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 120.0
+offset_bottom = 50.0
+
+[node name="PhaseIndicator" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 60.0
+offset_right = 200.0
+offset_bottom = 90.0

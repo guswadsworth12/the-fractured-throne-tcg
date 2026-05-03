@@ -1,0 +1,4 @@
+[gd_scene format=3 uid="uid:// hand_tsx"]
+
+[node name="Hand" type="HBoxContainer"]
+layout_mode = 2

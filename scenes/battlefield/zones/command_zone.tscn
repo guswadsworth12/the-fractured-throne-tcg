@@ -1,0 +1,4 @@
+[gd_scene format=3 uid="uid:// command_zone_tsx"]
+
+[node name="CommandZone" type="Control"]
+layout_mode = 2

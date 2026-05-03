@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid:// battlefield_tsx"]
+
+[node name="Battlefield" type="Node2D"]
+
+[node name="Zones" type="Node2D" parent="."]

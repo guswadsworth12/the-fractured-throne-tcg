@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid:// shield_zone_tsx"]
+
+[node name="ShieldZone" type="HBoxContainer"]
+
+[node name="Shield0" type="Control" parent="."]
+layout_mode = 2
+
+[node name="Shield1" type="Control" parent="."]
+layout_mode = 2
+
+[node name="Shield2" type="Control" parent="."]
+layout_mode = 2
+
+[node name="Shield3" type="Control" parent="."]
+layout_mode = 2
+
+[node name="Shield4" type="Control" parent="."]
+layout_mode = 2
+
+[node name="Shield5" type="Control" parent="."]
+layout_mode = 2

@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid:// card_ui_tsx"]
+
+[node name="CardUI" type="Control"]
+layout_mode = 2
+script = null
