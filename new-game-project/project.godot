@@ -14,15 +14,6 @@ config/name="New Game Project"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
 
-[physics]
-
-3d/physics_engine="Jolt Physics"
-
-[rendering]
-
-rendering_device/driver.windows="d3d12"
-renderer/rendering_method="mobile"
-
 [autoload]
 
 TurnManager="res://src/state/turn_manager.gd"
@@ -31,3 +22,12 @@ EnergyManager="res://src/state/energy_manager.gd"
 CombatResolver="res://src/state/combat_resolver.gd"
 ShieldManager="res://src/state/shield_manager.gd"
 DBManager="res://db/db_manager.gd"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"
+renderer/rendering_method="mobile"

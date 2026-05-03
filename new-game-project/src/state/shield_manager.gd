@@ -1,6 +1,6 @@
 extends Node
 
-class_name ShieldManagerClass
+class_name ShieldManager
 
 func _ready() -> void:
 	pass

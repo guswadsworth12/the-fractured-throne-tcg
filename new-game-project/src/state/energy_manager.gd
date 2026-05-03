@@ -1,6 +1,6 @@
 extends Node
 
-class_name EnergyManagerClass
+class_name EnergyManager
 
 func _ready() -> void:
 	pass

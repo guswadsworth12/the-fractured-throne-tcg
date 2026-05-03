@@ -1,6 +1,6 @@
 extends Node
 
-class_name DBManagerClass
+class_name DBManager
 
 func _ready() -> void:
 	pass
