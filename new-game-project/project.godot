@@ -22,3 +22,12 @@ config/icon="res://icon.svg"
 
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"
+
+[autoload]
+
+TurnManager="res://src/state/turn_manager.gd"
+ZoneManager="res://src/state/zone_manager.gd"
+EnergyManager="res://src/state/energy_manager.gd"
+CombatResolver="res://src/state/combat_resolver.gd"
+ShieldManager="res://src/state/shield_manager.gd"
+DBManager="res://db/db_manager.gd"
