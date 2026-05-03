@@ -199,11 +199,13 @@ class CardData:
 
 #region SIGNAL CONNECTION SETUP
 func _ready() -> void:
-	_connect_to_turn_manager()
+	call_deferred("_connect_to_turn_manager")
 
 func _connect_to_turn_manager() -> void:
-	if TurnManager:
-		TurnManager.phase_started.connect(_on_phase_started)
+	if has_node("/root/TurnManager"):
+		var tm = get_node("/root/TurnManager")
+		if tm.has_signal("phase_started"):
+			tm.phase_started.connect(_on_phase_started)
 
 ## Handles Phase 0 (Phase 0B: Refresh Phase) to untap backline units
 func _on_phase_started(phase: int, subphase: int) -> void:
@@ -228,7 +230,7 @@ func deploy(player: int, card: CardData, zone: String) -> bool:
 		push_error("ZoneManager.deploy: Invalid deploy target zone: " + zone)
 		return false
 	
-	if not _is_legal_deploy_target(zone):
+	if not is_legal_deploy_target(zone):
 		push_error("ZoneManager.deploy: Zone is not a legal deploy target: " + zone)
 		return false
 	
