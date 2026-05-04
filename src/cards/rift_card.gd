@@ -1,23 +1,13 @@
 class_name RiftCard
-extends Card
+extends res://src/cards/card_data.gd
 
-# TODO: Rift cards — 1 max in rift_zone, shared between both players
-# Global battlefield effect, not attached to any player
+@export var effect_text: String = ""
+@export var is_end_of_turn_effect: bool = false
+@export var affects_both_players: bool = true
 
-var rift_ability: String = ""
-var is_active: bool = false
-
-func _init() -> void:
-	card_type = "rift"
-	super._init()
-
-func activate() -> void:
-	# TODO: Activate rift effect
-	pass
-
-func deactivate() -> void:
-	# TODO: Deactivate rift effect
-	pass
-
-func is_global() -> bool:
-	return true
+func from_dict(row: Dictionary) -> RiftCard:
+	super.from_dict(row)
+	effect_text = row.get("effect_text", "")
+	affects_both_players = true
+	is_end_of_turn_effect = effect_text.to_lower().contains("end of turn")
+	return self

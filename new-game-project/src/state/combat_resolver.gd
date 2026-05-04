@@ -191,28 +191,6 @@ var void_lock_count: Dictionary = {0: 0, 1: 0}
 var previous_lineup_ability: Dictionary = {0: "", 1: ""}
 #endregion
 
-#region CARD DATA CLASS
-class CardData:
-	var id: String = ""
-	var name: String = ""
-	var rank: int = 0
-	var faction: String = ""
-	var power: int = 0
-	var keywords: Array = []
-	var is_face_up: bool = false
-	
-	func _init(p_id := "", p_name := "", p_rank := 0, p_faction := "", p_power := 0):
-		id = p_id
-		name = p_name
-		rank = p_rank
-		faction = p_faction
-		power = p_power
-		keywords = []
-		is_face_up = false
-	
-	func has_keyword(kw: String) -> bool:
-		return kw in keywords
-#endregion
 
 #region SIGNAL CONNECTION SETUP
 func _ready() -> void:
@@ -391,7 +369,7 @@ func _declare_infiltrate_attack(attacker, target_unit, target_player: int) -> vo
 	emit_signal("infiltrate_attack_declared", attacker, target_unit, target_player)
 	current_attack.defenders = [target_unit]
 
-func _get_backline_target(target_player: int) : :
+func _get_backline_target(target_player: int):
 	if not has_node("/root/ZoneManager"):
 		return null
 	var zm = get_node("/root/ZoneManager")
@@ -671,7 +649,7 @@ func reset_temporary_combat_effects() -> void:
 	drunken_rage_bonuses.clear()
 	sentinel_units.clear()
 
-func _get_card_by_id(card_id: String) : :
+func _get_card_by_id(card_id: String):
 	return null
 #endregion
 

@@ -122,28 +122,6 @@ var _last_uplink_threshold: Dictionary = {
 }
 #endregion
 
-#region CARD DATA CLASS (minimal for EnergyManager context)
-class CardData:
-	var id: String = ""
-	var name: String = ""
-	var rank: int = 0
-	var faction: String = ""
-	var keywords: Array = []
-	var power: int = 0
-	var command_ability: Dictionary = {}
-	
-	func _init(p_id := "", p_name := "", p_rank := 0, p_faction := ""):
-		id = p_id
-		name = p_name
-		rank = p_rank
-		faction = p_faction
-		keywords = []
-		power = 0
-		command_ability = {}
-	
-	func has_keyword(kw: String) -> bool:
-		return kw in keywords
-#endregion
 
 #region SIGNAL CONNECTION SETUP
 func _ready() -> void:
@@ -352,13 +330,13 @@ func _check_blood_tithe(player: int) -> void:
 ## Bloodlust: PERMANENT — never resets
 func reset_temporary_effects() -> void:
 	for card_id in drunken_rage_bonuses:
-		var card_data := _get_card_by_id(card_id)
+		var card_data = _get_card_by_id(card_id)
 		if card_data != null:
 			emit_signal("drunken_rage_expired", 0, card_data)
 			emit_signal("drunken_rage_expired", 1, card_data)
 	drunken_rage_bonuses.clear()
 
-func _get_card_by_id(_card_id: String) : :
+func _get_card_by_id(_card_id: String):
 	return null  ## Placeholder — KeywordHandler tracks card instances
 #endregion
 

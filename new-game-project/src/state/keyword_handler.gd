@@ -90,15 +90,6 @@ func set_prophecy_prediction(player: int, card, predicted_type: String) -> void:
 	}
 #endregion
 
-#region CARD DATA CLASS (minimal for signal callbacks)
-class CardData:
-	var id: String = ""
-	var name: String = ""
-	var rank: int = 0
-	var faction: String = ""
-	var power: int = 0
-	var keywords: Array = []
-#endregion
 
 #region INITIALIZATION
 func _ready() -> void:
@@ -378,7 +369,7 @@ func _emit_drake_bond_severed(player: int, surviving_card) -> void:
 		partner_card = _get_card_by_id(partner_id)
 	emit_signal("drake_bond_severed", player, surviving_card, partner_card)
 
-func _get_card_by_id(_card_id: String) : :
+func _get_card_by_id(_card_id: String):
 	return null
 
 func register_drake_bond(card_a, card_b) -> void:

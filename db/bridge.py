@@ -11,12 +11,12 @@ from typing import List, Dict, Any
 
 app = FastAPI()
 
-# Setup CORS
+# Setup CORS to allow connections from Godot (localhost)
 app.add_middleware(
- CORSMiddleware,
- allow_origins=["http://localhost", "http://127.0.0.1"],
- allow_methods=["GET", "POST"],
- allow_headers=["*"],
+    CORSMiddleware,
+    allow_origins=["*"], # In dev, allow all. Godot might use various localhost ports.
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
 )
 
 # Database config — peer auth: user "rend", host="localhost", db="fracture_throne"
@@ -59,3 +59,7 @@ def query(request: Dict[str, Any]) -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)

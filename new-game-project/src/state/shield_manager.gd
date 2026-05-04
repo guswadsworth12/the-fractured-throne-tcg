@@ -55,28 +55,6 @@ var pierce_triggered_this_attack: bool = false
 var shield_contents: Dictionary = {0: [], 1: []}
 #endregion
 
-#region CARD DATA CLASS
-class CardData:
-	var id: String = ""
-	var name: String = ""
-	var rank: int = 0
-	var faction: String = ""
-	var power: int = 0
-	var keywords: Array = []
-	var is_face_up: bool = false
-	
-	func _init(p_id := "", p_name := "", p_rank := 0, p_faction := "", p_power := 0):
-		id = p_id
-		name = p_name
-		rank = p_rank
-		faction = p_faction
-		power = p_power
-		keywords = []
-		is_face_up = false
-	
-	func has_keyword(kw: String) -> bool:
-		return kw in keywords
-#endregion
 
 #region SIGNAL CONNECTION SETUP
 func _ready() -> void:

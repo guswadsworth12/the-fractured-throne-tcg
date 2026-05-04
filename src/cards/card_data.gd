@@ -1,101 +1,68 @@
-## CardData.gd
-## Flat card data class for The Fracture Throne TCG.
-## Used across all engine signals and scenes.
-## **Type-specific fields**: treat as read-only based on card_type.
-
 class_name CardData
+extends Resource
 
-#region SHARED FIELDS
-var id: String = ""
-var name: String = ""
-var faction_name: String = ""
-var card_type: String = "Unit" ## "Unit", "Burst", "Augment", "Rift"
-var rank_cost: int = 0
-var is_unique: bool = false
-var copy_limit: int = 3
+@export var id: int = 0
+@export var name: String = ""
+@export var faction_name: String = ""
+@export var faction_id: int = 0
+@export var card_type: String = ""
+@export var rank_cost: int = 1
+@export var is_unique: bool = false
+@export var copy_limit: int = 3
+@export var flavor_text: String = ""
+@export var set_code: String = ""
+@export var art_path: String = ""
+@export var notes: String = ""
+@export var keywords: Array[String] = []
+@export var power_cap_ok: bool = false
 
-## Shared across unit/burst/augment/rift
-var keywords: Array = [] ## Array[string]
-var flavor_text: String = ""
-var set_code: String = "SET1"
-var art_path: String = ""
-#endregion
+func from_dict(row: Dictionary) -> CardData:
+	id = row.get("id", 0)
+	name = row.get("name", "")
+	faction_name = row.get("faction_name", "")
+	faction_id = row.get("faction_id", 0)
+	card_type = row.get("card_type", "")
+	rank_cost = row.get("rank_cost", 1)
+	is_unique = row.get("is_unique", false)
+	copy_limit = row.get("copy_limit", 3)
+	flavor_text = row.get("flavor_text", "")
+	set_code = row.get("set_code", "")
+	art_path = row.get("art_path", "")
+	notes = row.get("notes", "")
+	power_cap_ok = row.get("power_cap_ok", false)
+	
+	var kw_raw = row.get("keywords", "")
+	if kw_raw is String and kw_raw != "":
+		keywords = Array(kw_raw.split(",", false), TYPE_STRING, "", null)
+	elif kw_raw is Array:
+		keywords = Array(kw_raw, TYPE_STRING, "", null)
+	else:
+		keywords = []
+	
+	return self
 
-#region TYPE-SPECIFIC FIELDS — Unit/Burst/Augment/Rift
-## Unit cards — mandatory if card_type="Unit"
-var power: int = 0
-var unit_subtype: String = "" ## "General", "Frontline", "Backline", ""
-var frontline_ability: String = ""
-var backline_ability: String = ""
-var command_ability: String = ""
-var is_general_eligible: bool = false
+func to_dict() -> Dictionary:
+	return {
+		"id": id,
+		"name": name,
+		"faction_name": faction_name,
+		"faction_id": faction_id,
+		"card_type": card_type,
+		"rank_cost": rank_cost,
+		"is_unique": is_unique,
+		"copy_limit": copy_limit,
+		"flavor_text": flavor_text,
+		"set_code": set_code,
+		"art_path": art_path,
+		"notes": notes,
+		"keywords": keywords,
+		"power_cap_ok": power_cap_ok
+	}
 
-## Burst cards
-var burst_subtype: String = "" ## "Reaction", "Fast", "Slow"
-var effect_text: String = ""
+func has_keyword(keyword: String) -> bool:
+	return keywords.any(func(k): return k.to_lower() == keyword.to_lower())
 
-## Augment cards
-var augment_subtype: String = "" ## "Artifact", "Enchantment", "Equipment"
-
-## Shared between Burst, Augment, Rift
-## Rift
-#endregion
-
-#region METHODS
-func _init(p_id: String = "", 
- p_name: String = "", 
- p_faction_name: String = "",
- p_card_type: String = "Unit", 
- p_rank_cost: int = 0) -> void:
- id = p_id
- name = p_name
- faction_name = p_faction_name
- card_type = p_card_type ## One of "Unit", "Burst", "Augment", "Rift"
- rank_cost = p_rank_cost
-
-func has_keyword(kw: String) -> bool:
- return kw in keywords
-
-## Zones this card can normally occupy:
-## Unit → "frontline", "backline"
-## Augment → none (attached or deployed via abilities)
-## Rift → command_zone
-## Burst → none (momentary)
-func get_allowed_zones() -> Array:
- match card_type:
- "Unit":
- if unit_subtype == "General":
- return ["command_zone"]
- return ["frontline", "backline"]
- "Augment":
- return []
- "Burst":
- return []
- "Rift":
- return ["command_zone"]
-
-## Whether this card counts against frontline/backline limits:
-## General → false
-## Frontline Unit → frontline limit
-## Backline Unit → backline limit
-## Burst/Augment → false (typically in command_zone)
-## Rift → command_zone only — does not count
-func counts_against_zone_limit(zone: String) -> bool:
- match card_type:
- "Unit":
- match zone:
- "frontline":
- return unit_subtype != "General"
- "backline":
- return unit_subtype != "General" and frontline_ability == ""
- "command_zone":
- return unit_subtype == "General"
- else:
- return false
- "Burst":
- return false
- "Augment":
- return false
- "Rift":
- return zone == "command_zone"
-#endregion
+func get_display_name() -> String:
+	if is_unique:
+		return "[UNIQUE] " + name
+	return name

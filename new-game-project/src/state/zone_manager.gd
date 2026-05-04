@@ -23,6 +23,8 @@ const MAX_SHIELD := 6
 const MAX_COMMAND := 1
 #endregion
 
+const CardData = preload("res://src/cards/card_data.gd")
+
 #region SIGNALS
 ## Emitted when any zone's contents change.
 ## zone_changed(player: int, zone_name: String, contents: Array)
@@ -165,37 +167,6 @@ var _devoured_cards: Dictionary = {
 }
 #endregion
 
-#region CARD DATA CLASS
-class CardData:
-	var id: String = ""
-	var name: String = ""
-	var rank: int = 0
-	var faction: String = ""
-	var keywords: Array = []
-	var power: int = 0
-	var is_face_up: bool = false
-	var reanimate_removed: bool = false
-	var paired_card = null
-	
-	func _init(p_id := "", p_name := "", p_rank := 0, p_faction := "", p_power := 0):
-		id = p_id
-		name = p_name
-		rank = p_rank
-		faction = p_faction
-		power = p_power
-		keywords = []
-		is_face_up = false
-	
-	func has_keyword(kw: String) -> bool:
-		return kw in keywords
-	
-	func clone() : :
-		var c := CardData.new(id, name, rank, faction, power)
-		c.keywords = keywords.duplicate()
-		c.is_face_up = is_face_up
-		c.reanimate_removed = reanimate_removed
-		return c
-#endregion
 
 #region SIGNAL CONNECTION SETUP
 func _ready() -> void:
@@ -548,7 +519,7 @@ func get_active_general_rank(player: int) -> int:
 	return _general_stack[player].back().rank
 
 ## Returns the active General card data.
-func get_active_general(player: int) : :
+func get_active_general(player: int) -> CardData:
 	if _general_stack[player].is_empty():
 		return null
 	return _general_stack[player].back()
@@ -562,7 +533,7 @@ func get_unit_current_zone(player: int, card) -> String:
 
 ## Returns the paired frontline CardData for a backline slot index.
 ## Returns null if no unit in that frontline slot.
-func get_paired_frontline_slot(player: int, backline_index: int) : :
+func get_paired_frontline_slot(player: int, backline_index: int) -> CardData:
 	var frontline: Array = _zones[player][ZONE_FRONTLINE]
 	if backline_index < 0 or backline_index >= frontline.size():
 		return null
@@ -624,7 +595,7 @@ func get_shield_count(player: int) -> int:
 	return _zones[player][ZONE_SHIELD].size()
 
 ## Returns the active Rift card.
-func get_active_rift() : :
+func get_active_rift() -> CardData:
 	return _active_rift
 
 ## Returns a copy of the General stack.

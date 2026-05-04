@@ -1,22 +1,19 @@
 class_name BurstCard
-extends Card
+extends res://src/cards/card_data.gd
 
-# TODO: Burst cards — instant effects, resolved immediately
-# Cannot target Aegis units. Do not trigger combat (no Bloodlust, no Reanimate).
+@export var burst_subtype: String = "Cast"
+@export var effect_text: String = ""
+@export var trigger_condition: String = ""
 
-var target_type: String = ""
-var effect: Dictionary = {}
+func is_reaction() -> bool:
+	return burst_subtype == "Reaction"
 
-func _init() -> void:
-	card_type = "burst"
-	super._init()
+func is_cast() -> bool:
+	return burst_subtype == "Cast"
 
-func resolve(source: Object, targets: Array) -> Dictionary:
-	# TODO: Execute burst effect, return result
-	return {}
-
-func is_valid_target(target: Object) -> bool:
-	return true
-
-func can_target_aegis() -> bool:
-	return false
+func from_dict(row: Dictionary) -> BurstCard:
+	super.from_dict(row)
+	burst_subtype = row.get("burst_subtype", "Cast")
+	effect_text = row.get("effect_text", "")
+	trigger_condition = ""
+	return self

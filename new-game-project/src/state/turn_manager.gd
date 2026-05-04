@@ -19,14 +19,6 @@ signal attack_declared(attacker, defender)
 signal turn_started(player: int)
 signal turn_ended(player: int)
 
-## Minimal CardData for TurnManager signals
-class CardData:
-	var id: String = ""
-	var name: String = ""
-	var rank: int = 0
-	var faction: String = ""
-	var power: int = 0
-	var keywords: Array = []
 
 var current_phase: int = 0
 var current_subphase: int = 0
