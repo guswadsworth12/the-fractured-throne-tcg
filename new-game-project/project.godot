@@ -22,7 +22,7 @@ EnergyManager="res://src/state/energy_manager.gd"
 CombatResolver="res://src/state/combat_resolver.gd"
 ShieldManager="res://src/state/shield_manager.gd"
 KeywordHandler="res://src/state/keyword_handler.gd"
-DBManager="res://db/db_manager.gd"
+DatabaseManager="res://src/state/db_manager.gd"
 
 [physics]
 

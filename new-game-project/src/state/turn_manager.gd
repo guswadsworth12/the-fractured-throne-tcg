@@ -15,7 +15,7 @@ const PHASE_END := 6
 signal phase_started(phase: int, subphase: int)
 signal phase_changed(old_phase: int, new_phase: int)
 signal end_phase_started()
-signal attack_declared(attacker: CardData, defender: CardData)
+signal attack_declared(attacker, defender)
 signal turn_started(player: int)
 signal turn_ended(player: int)
 
@@ -41,7 +41,7 @@ func start_game() -> void:
 	current_player = 0
 	emit_signal("phase_started", current_phase, current_subphase)
 
-func declare_attack(attacker: CardData, defender: CardData) -> void:
+func declare_attack(attacker, defender) -> void:
 	emit_signal("attack_declared", attacker, defender)
 
 func advance_phase() -> void:

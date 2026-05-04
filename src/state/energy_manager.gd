@@ -24,12 +24,12 @@ signal energy_spent(player: int, amount: int)
 signal energy_gained(player: int, amount: int, source: String)
 
 ## Emitted when Drunken Rage temporary bonus is applied.
-## drunken_rage_applied(player: int, card: CardData, power_bonus: int)
-signal drunken_rage_applied(player: int, card: CardData, power_bonus: int)
+## drunken_rage_applied(player: int, card, power_bonus: int)
+signal drunken_rage_applied(player: int, card, power_bonus: int)
 
 ## Emitted when Drunken Rage temporary bonus expires at Phase 0.
-## drunken_rage_expired(player: int, card: CardData)
-signal drunken_rage_expired(player: int, card: CardData)
+## drunken_rage_expired(player: int, card)
+signal drunken_rage_expired(player: int, card)
 
 ## Emitted when Sovereign's Reign converts Energy to permanent Power.
 ## sovereign_reign_resolved(player: int, conversions: Array)
@@ -40,8 +40,8 @@ signal sovereign_reign_resolved(player: int, conversions: Array)
 signal house_cut_triggered(player: int, amount: int)
 
 ## Emitted when Flame Prayer resolves — Energy gained from unit destruction.
-## flame_prayer_resolved(player: int, card: CardData)
-signal flame_prayer_resolved(player: int, card: CardData)
+## flame_prayer_resolved(player: int, card)
+signal flame_prayer_resolved(player: int, card)
 
 ## Emitted when Dragonfire cost is successfully paid.
 ## dragonfire_cost_paid(player: int, amount: int)
@@ -52,16 +52,16 @@ signal dragonfire_cost_paid(player: int, amount: int)
 signal energy_insufficient(player: int, required: int, available: int)
 
 ## Emitted for KeywordHandler to resolve Surge ability.
-## surge_triggered(player: int, card: CardData)
-signal surge_triggered(player: int, card: CardData)
+## surge_triggered(player: int, card)
+signal surge_triggered(player: int, card)
 
 ## Emitted when Blood Tithe penalty applies (no shields broke this turn).
 ## blood_tithe_penalty(player: int)
 signal blood_tithe_penalty(player: int)
 
 ## Emitted when Uplink energy threshold condition is met.
-## uplink_condition_met(player: int, card: CardData, condition_type: String)
-signal uplink_condition_met(player: int, card: CardData, condition_type: String)
+## uplink_condition_met(player: int, card, condition_type: String)
+signal uplink_condition_met(player: int, card, condition_type: String)
 
 ## Emitted at end of turn after all Energy effects resolve.
 ## end_of_turn_energy_resolved(player: int)
@@ -70,11 +70,11 @@ signal end_of_turn_energy_resolved(player: int)
 
 #region SIGNALS LISTENED TO
 ## From ZoneManager
-signal shield_broken(player: int, card: CardData, shields_remaining: int)
-signal surge_triggered_zm(player: int, card: CardData)
+signal shield_broken(player: int, card, shields_remaining: int)
+signal surge_triggered_zm(player: int, card)
 signal flame_prayer_triggered_zm(player: int)
 signal energy_spent_zm(player: int, amount: int)
-signal unit_destroyed_zm(player: int, card: CardData, zone: String)
+signal unit_destroyed_zm(player: int, card, zone: String)
 
 ## From TurnManager
 signal turn_ended_tm(player: int)
@@ -185,7 +185,7 @@ func _delayed_zone_manager_connect() -> void:
 ## Called when ZoneManager emits shield_broken
 ## Shield card moves to energy_zone — increments Energy count
 ## Surge is handled separately in _on_surge_triggered
-func _on_shield_broken(player: int, _card: CardData, _shields_remaining: int) -> void:
+func _on_shield_broken(player: int, _card, _shields_remaining: int) -> void:
 	energy_count[player] += 1
 	shield_breaks_this_turn[player] += 1
 	emit_signal("energy_gained", player, 1, "shield_break")
@@ -195,7 +195,7 @@ func _on_shield_broken(player: int, _card: CardData, _shields_remaining: int) ->
 ## Called when ZoneManager emits surge_triggered
 ## Surge triggers ONLY on entry from Shield Zone — already validated by ZoneManager
 ## EnergyManager trusts this signal — emits for KeywordHandler to resolve
-func _on_surge_triggered(player: int, card: CardData) -> void:
+func _on_surge_triggered(player: int, card) -> void:
 	emit_signal("surge_triggered", player, card)
 
 ## Called when ZoneManager emits flame_prayer_triggered
@@ -221,7 +221,7 @@ func _on_zone_energy_spent(player: int, amount: int) -> void:
 
 ## Called when ZoneManager emits unit_destroyed
 ## Checks for Flame Prayer keyword on destroyed card
-func _on_unit_destroyed(player: int, card: CardData, _zone: String) -> void:
+func _on_unit_destroyed(player: int, card, _zone: String) -> void:
 	if card.has_keyword("Flame Prayer"):
 		emit_signal("flame_prayer_resolved", player, card)
 #endregion
@@ -262,7 +262,7 @@ func request_spend_energy(player: int, amount: int) -> bool:
 ## NEVER confuse with Bloodlust which is PERMANENT
 ## [ENERGY: X] — one chosen Frontline unit gains +X×100 Power until EOT
 ## Maximum [ENERGY: 5] for +500 Power
-func apply_drunken_rage(player: int, card: CardData, energy_cost: int) -> bool:
+func apply_drunken_rage(player: int, card, energy_cost: int) -> bool:
 	if energy_cost > 5:
 		push_error("EnergyManager: Drunken Rage max energy cost is 5")
 		return false
@@ -358,7 +358,7 @@ func reset_temporary_effects() -> void:
 			emit_signal("drunken_rage_expired", 1, card_data)
 	drunken_rage_bonuses.clear()
 
-func _get_card_by_id(_card_id: String) -> CardData:
+func _get_card_by_id(_card_id: String) : :
 	return null  ## Placeholder — KeywordHandler tracks card instances
 #endregion
 

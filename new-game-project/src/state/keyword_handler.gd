@@ -13,22 +13,22 @@ class_name KeywordHandler
 ## Unified keyword event — scenes subscribe to this for all keyword reactivity.
 ## result values: "success", "failed", "activated", "expired", "blocked", "destroyed",
 ##                 "boosted", "reduced", "triggered", "applied", "chained"
-signal keyword_activated(keyword: String, player: int, card: CardData, result: String)
+signal keyword_activated(keyword: String, player: int, card, result: String)
 
 ## Fired when a Prophet unit's ability activates — scene must prompt player.
-signal prophecy_prediction_requested(player: int, card: CardData)
+signal prophecy_prediction_requested(player: int, card)
 
 ## Fired when a unit with Reanimate dies — card is returning to field.
-signal reanimate_triggered(player: int, card: CardData)
+signal reanimate_triggered(player: int, card)
 
 ## Fired when a Devour resolves — consumed card placed below stack.
-signal devoured_card_placed(card_id: String, card: CardData)
+signal devoured_card_placed(card_id: String, card)
 
 ## Fired when a Drakesworn Bond is severed.
-signal drake_bond_severed(player: int, surviving_card: CardData, consumed_card: CardData)
+signal drake_bond_severed(player: int, surviving_card, consumed_card)
 
 ## Fired when an Anchor blocks a forced move.
-signal anchor_blocked_move(card: CardData, reason: String)
+signal anchor_blocked_move(card, reason: String)
 #endregion
 
 #region PERMANENT STATE (never reset)
@@ -55,7 +55,7 @@ var uplink_trackers: Dictionary = {}
 var prophet_predictions: Dictionary = {}
 
 ## Pending Prophecy awaiting player choice.
-## Structure: player → {card: CardData, predicted_type: String}
+## Structure: player → {card, predicted_type: String}
 var pending_prophecy: Dictionary = {}
 
 ## Lineup chain tracking — set true when a Lineup ability chains.
@@ -81,7 +81,7 @@ const PROPHECY_TYPES: Array = ["Unit", "Burst", "Augment"]
 
 ## Sets the player's Prophecy prediction after scene prompts them.
 ## Called by scene after player selects a card type.
-func set_prophecy_prediction(player: int, card: CardData, predicted_type: String) -> void:
+func set_prophecy_prediction(player: int, card, predicted_type: String) -> void:
 	if predicted_type not in PROPHECY_TYPES:
 		return
 	pending_prophecy[player] = {
@@ -210,11 +210,11 @@ func _turn_reset_player(player: int) -> void:
 #endregion
 
 #region ZONE MANAGER HANDLERS
-func _on_unit_deployed(player: int, card: CardData, _zone: String) -> void:
+func _on_unit_deployed(player: int, card, _zone: String) -> void:
 	_card_owner[card.id] = player
 	emit_keyword("Blitz", player, card, "activated")
 
-func _on_unit_destroyed(player: int, card: CardData, _zone: String) -> void:
+func _on_unit_destroyed(player: int, card, _zone: String) -> void:
 	_card_owner.erase(card.id)
 	if "Reanimate" in card.keywords:
 		if not reanimate_removed.has(card.id):
@@ -222,12 +222,12 @@ func _on_unit_destroyed(player: int, card: CardData, _zone: String) -> void:
 			reanimate_removed[card.id] = true
 	emit_keyword("Flame Prayer", player, card, "destroyed")
 
-func _on_devour_completed(player: int, card: CardData) -> void:
+func _on_devour_completed(player: int, card) -> void:
 	devour_used_this_turn.append(card.id)
 	emit_signal("devoured_card_placed", card.id, card)
 	emit_keyword("Devour", player, card, "activated")
 
-func _on_drakesworn_bond_broken_zm(player: int, surviving_card: CardData) -> void:
+func _on_drakesworn_bond_broken_zm(player: int, surviving_card) -> void:
 	_emit_drake_bond_severed(player, surviving_card)
 
 func _on_flame_prayer_triggered_zm(_player: int) -> void:
@@ -235,22 +235,22 @@ func _on_flame_prayer_triggered_zm(_player: int) -> void:
 #endregion
 
 #region SHIELD MANAGER HANDLERS
-func _on_shield_broken_sm(_player: int, _card: CardData, _shields_remaining: int) -> void:
+func _on_shield_broken_sm(_player: int, _card, _shields_remaining: int) -> void:
 	pass
 
-func _on_surge_triggered_sm(player: int, card: CardData) -> void:
+func _on_surge_triggered_sm(player: int, card) -> void:
 	if not _surge_active_this_event:
 		_surge_active_this_event = true
 		emit_keyword("Surge", player, card, "triggered")
 		_surge_active_this_event = false
 
-func _on_pierce_shield_broken(target_player: int, attacker: CardData) -> void:
+func _on_pierce_shield_broken(target_player: int, attacker) -> void:
 	emit_keyword("Pierce", target_player, attacker, "triggered")
 
-func _on_lifesteal_triggered(attacking_player: int, attacker: CardData, _target_player: int) -> void:
+func _on_lifesteal_triggered(attacking_player: int, attacker, _target_player: int) -> void:
 	emit_keyword("Lifesteal", attacking_player, attacker, "triggered")
 
-func _on_radiant_barrier_activated(player: int, card: CardData, _energy_cost: int) -> void:
+func _on_radiant_barrier_activated(player: int, card, _energy_cost: int) -> void:
 	emit_keyword("Radiant Barrier", player, card, "activated")
 
 func _on_radiant_lattice_updated(_player: int, _bonus: int) -> void:
@@ -259,75 +259,75 @@ func _on_radiant_lattice_updated(_player: int, _bonus: int) -> void:
 func _on_warden_light_activated(_player: int) -> void:
 	pass
 
-func _on_upwelling_triggered(player: int, card: CardData) -> void:
+func _on_upwelling_triggered(player: int, card) -> void:
 	emit_keyword("Upwelling", player, card, "triggered")
 #endregion
 
 #region COMBAT RESOLVER HANDLERS
-func _on_attack_declared_cr(_attacker: CardData, _defender: CardData) -> void:
+func _on_attack_declared_cr(_attacker, _defender) -> void:
 	pass
 
 func _on_defenders_chosen(_defenders: Array) -> void:
 	pass
 
-func _on_boost_applied(attacker: CardData, backline_unit: CardData, _boost_value: int) -> void:
+func _on_boost_applied(attacker, backline_unit, _boost_value: int) -> void:
 	var backline_player = _card_owner.get(backline_unit.id, 0)
 	emit_keyword("Backline", backline_player, attacker, "boosted")
 
 func _on_power_comparison_resolved(_attacker_power: int, _defense_power: int, _attacker_wins: bool) -> void:
 	pass
 
-func _on_attacker_destroyed(card: CardData) -> void:
+func _on_attacker_destroyed(card) -> void:
 	var player = _card_owner.get(card.id, 0)
 	if "Bloodlust" in card.keywords:
 		emit_keyword("Bloodlust", player, card, "triggered")
 
-func _on_defender_destroyed(_card: CardData) -> void:
+func _on_defender_destroyed(_card) -> void:
 	pass
 
 func _on_general_attacked(_target_player: int) -> void:
 	pass
 
-func _on_infiltrate_attack_declared(attacker: CardData, _target_unit: CardData, target_player: int) -> void:
+func _on_infiltrate_attack_declared(attacker, _target_unit, target_player: int) -> void:
 	emit_keyword("Infiltrate", target_player, attacker, "activated")
 
-func _on_bloodlust_gained(player: int, card: CardData, _new_power: int) -> void:
+func _on_bloodlust_gained(player: int, card, _new_power: int) -> void:
 	emit_keyword("Bloodlust", player, card, "applied")
 
-func _on_void_pulse_applied(player: int, card: CardData, _reduction: int) -> void:
+func _on_void_pulse_applied(player: int, card, _reduction: int) -> void:
 	emit_keyword("Void Pulse", player, card, "reduced")
 
-func _on_void_pulse_expired(player: int, card: CardData) -> void:
+func _on_void_pulse_expired(player: int, card) -> void:
 	emit_keyword("Void Pulse", player, card, "expired")
 
-func _on_sovereign_reign_applied(player: int, card: CardData, _power_gain: int) -> void:
+func _on_sovereign_reign_applied(player: int, card, _power_gain: int) -> void:
 	emit_keyword("Sovereign's Reign", player, card, "applied")
 
-func _on_drunken_rage_expired_cr(player: int, card: CardData) -> void:
+func _on_drunken_rage_expired_cr(player: int, card) -> void:
 	emit_keyword("Drunken Rage", player, card, "expired")
 
-func _on_overcharge_destroyed(player: int, card: CardData) -> void:
+func _on_overcharge_destroyed(player: int, card) -> void:
 	emit_keyword("Overcharge", player, card, "destroyed")
 
-func _on_drakesworn_bond_broken_cr(player: int, surviving_card: CardData, _new_power: int) -> void:
+func _on_drakesworn_bond_broken_cr(player: int, surviving_card, _new_power: int) -> void:
 	_emit_drake_bond_severed(player, surviving_card)
 
-func _on_lineup_chain_triggered(player: int, card: CardData, _bonus: int) -> void:
+func _on_lineup_chain_triggered(player: int, card, _bonus: int) -> void:
 	if previous_lineup_card[player] != null and previous_lineup_card[player].id != card.id:
 		lineup_chain_active[player] = true
 	emit_keyword("Lineup", player, card, "chained")
 	previous_lineup_card[player] = card
 
-func _on_prophecy_activated(player: int, card: CardData) -> void:
+func _on_prophecy_activated(player: int, card) -> void:
 	emit_signal("prophecy_prediction_requested", player, card)
 
 func _on_relay_bonus_applied(player: int, _bonus: int) -> void:
 	emit_keyword("Relay", player, null, "applied")
 
-func _on_dominion_activated(player: int, attacker: CardData) -> void:
+func _on_dominion_activated(player: int, attacker) -> void:
 	emit_keyword("Dominion", player, attacker, "activated")
 
-func _on_anchor_blocked_move(card: CardData) -> void:
+func _on_anchor_blocked_move(card) -> void:
 	var player = _card_owner.get(card.id, 0)
 	emit_signal("anchor_blocked_move", card, "forced_move")
 	emit_keyword("Anchor", player, card, "blocked")
@@ -343,7 +343,7 @@ func _on_energy_spent(_player: int, _amount: int) -> void:
 func _on_energy_gained(_player: int, _amount: int, _source: String) -> void:
 	pass
 
-func _on_surge_triggered_em(player: int, card: CardData) -> void:
+func _on_surge_triggered_em(player: int, card) -> void:
 	if not _surge_active_this_event:
 		_surge_active_this_event = true
 		emit_keyword("Surge", player, card, "triggered")
@@ -357,31 +357,31 @@ func _on_house_cut_triggered(player: int, _amount: int) -> void:
 		house_cut_triggers[player] += 1
 		emit_keyword("House Cut", player, null, "triggered")
 
-func _on_flame_prayer_resolved(player: int, card: CardData) -> void:
+func _on_flame_prayer_resolved(player: int, card) -> void:
 	emit_keyword("Flame Prayer", player, card, "resolved")
 
-func _on_drunken_rage_expired_em(player: int, card: CardData) -> void:
+func _on_drunken_rage_expired_em(player: int, card) -> void:
 	emit_keyword("Drunken Rage", player, card, "expired")
 
-func _on_uplink_condition_met(player: int, card: CardData, _condition_type: String) -> void:
+func _on_uplink_condition_met(player: int, card, _condition_type: String) -> void:
 	emit_keyword("Uplink", player, card, "condition_met")
 #endregion
 
 #region HELPER METHODS
-func emit_keyword(keyword: String, player: int, card: CardData, result: String) -> void:
+func emit_keyword(keyword: String, player: int, card, result: String) -> void:
 	emit_signal("keyword_activated", keyword, player, card, result)
 
-func _emit_drake_bond_severed(player: int, surviving_card: CardData) -> void:
+func _emit_drake_bond_severed(player: int, surviving_card) -> void:
 	var partner_id = drake_bond_partners.get(surviving_card.id, null)
 	var partner_card = null
 	if partner_id != null:
 		partner_card = _get_card_by_id(partner_id)
 	emit_signal("drake_bond_severed", player, surviving_card, partner_card)
 
-func _get_card_by_id(_card_id: String) -> CardData:
+func _get_card_by_id(_card_id: String) : :
 	return null
 
-func register_drake_bond(card_a: CardData, card_b: CardData) -> void:
+func register_drake_bond(card_a, card_b) -> void:
 	drake_bond_partners[card_a.id] = card_b.id
 	drake_bond_partners[card_b.id] = card_a.id
 #endregion

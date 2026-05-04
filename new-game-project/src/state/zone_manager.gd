@@ -29,44 +29,44 @@ const MAX_COMMAND := 1
 signal zone_changed(player: int, zone_name: String, contents: Array)
 
 ## Emitted when a unit is deployed to frontline or backline.
-## unit_deployed(player: int, card: CardData, zone: String)
-signal unit_deployed(player: int, card: CardData, zone: String)
+## unit_deployed(player: int, card, zone: String)
+signal unit_deployed(player: int, card, zone: String)
 
 ## Emitted when a unit moves between zones.
-## unit_moved(player: int, card: CardData, from_zone: String, to_zone: String)
-signal unit_moved(player: int, card: CardData, from_zone: String, to_zone: String)
+## unit_moved(player: int, card, from_zone: String, to_zone: String)
+signal unit_moved(player: int, card, from_zone: String, to_zone: String)
 
 ## Emitted when a unit is destroyed and sent to remnant_zone.
-## unit_destroyed(player: int, card: CardData, zone: String)
-signal unit_destroyed(player: int, card: CardData, zone: String)
+## unit_destroyed(player: int, card, zone: String)
+signal unit_destroyed(player: int, card, zone: String)
 
 ## Emitted when a backline unit taps (e.g., to boost).
-## unit_tapped(player: int, card: CardData)
-signal unit_tapped(player: int, card: CardData)
+## unit_tapped(player: int, card)
+signal unit_tapped(player: int, card)
 
 ## Emitted when backline units are untapped in Phase 0.
-## unit_untapped(player: int, card: CardData)
-signal unit_untapped(player: int, card: CardData)
+## unit_untapped(player: int, card)
+signal unit_untapped(player: int, card)
 
 ## Emitted when a General advances in rank.
-## general_advanced(player: int, new_rank: int, card: CardData)
-signal general_advanced(player: int, new_rank: int, card: CardData)
+## general_advanced(player: int, new_rank: int, card)
+signal general_advanced(player: int, new_rank: int, card)
 
 ## Emitted when a Rift card is played.
-## rift_played(card: CardData)
-signal rift_played(card: CardData)
+## rift_played(card)
+signal rift_played(card)
 
 ## Emitted when a Rift is destroyed by a new Rift.
-## rift_destroyed(card: CardData)
-signal rift_destroyed(card: CardData)
+## rift_destroyed(card)
+signal rift_destroyed(card)
 
 ## Emitted when a Shield breaks.
-## shield_broken(player: int, card: CardData, shields_remaining: int)
-signal shield_broken(player: int, card: CardData, shields_remaining: int)
+## shield_broken(player: int, card, shields_remaining: int)
+signal shield_broken(player: int, card, shields_remaining: int)
 
 ## Emitted when a broken Shield has Surge keyword.
-## surge_triggered(player: int, card: CardData)
-signal surge_triggered(player: int, card: CardData)
+## surge_triggered(player: int, card)
+signal surge_triggered(player: int, card)
 
 ## Emitted when Energy is spent.
 ## energy_spent(player: int, amount: int)
@@ -77,20 +77,20 @@ signal energy_spent(player: int, amount: int)
 signal singularity_triggered(player: int)
 
 ## Emitted when a Legacy ability is activated from a buried General.
-## legacy_ability_activated(player: int, card: CardData, ability_text: String)
-signal legacy_ability_activated(player: int, card: CardData, ability_text: String)
+## legacy_ability_activated(player: int, card, ability_text: String)
+signal legacy_ability_activated(player: int, card, ability_text: String)
 
 ## Emitted when a card is eligible for Blitz this turn.
-## blitz_eligible(card: CardData)
-signal blitz_eligible(card: CardData)
+## blitz_eligible(card)
+signal blitz_eligible(card)
 
 ## Emitted when a Rot unit uses Devour.
-## devour_completed(player: int, card: CardData)
-signal devour_completed(player: int, card: CardData)
+## devour_completed(player: int, card)
+signal devour_completed(player: int, card)
 
 ## Emitted when a Drake unit's bond is broken.
-## drakesworn_bond_broken(player: int, surviving_card: CardData)
-signal drakesworn_bond_broken(player: int, surviving_card: CardData)
+## drakesworn_bond_broken(player: int, surviving_card)
+signal drakesworn_bond_broken(player: int, surviving_card)
 
 ## Emitted when a unit with Flame Prayer is destroyed.
 ## flame_prayer_triggered(player: int)
@@ -101,8 +101,8 @@ signal flame_prayer_triggered(player: int)
 signal general_destroyed(player: int)
 
 ## Emitted when a unit's ability zone changes (e.g., moving to/from backline).
-## ability_zone_changed(card: CardData, new_zone: String)
-signal ability_zone_changed(card: CardData, new_zone: String)
+## ability_zone_changed(card, new_zone: String)
+signal ability_zone_changed(card, new_zone: String)
 #endregion
 
 #region STATE
@@ -140,7 +140,7 @@ var _tapped_units: Dictionary = {
 }
 
 ## Active Rift card (shared between players)
-var _active_rift: CardData = null
+var _active_rift = null
 
 ## General advancement stacks per player
 ## Index 0 = Rank 1 base General, top = active General
@@ -175,7 +175,7 @@ class CardData:
 	var power: int = 0
 	var is_face_up: bool = false
 	var reanimate_removed: bool = false
-	var paired_card: CardData = null
+	var paired_card = null
 	
 	func _init(p_id := "", p_name := "", p_rank := 0, p_faction := "", p_power := 0):
 		id = p_id
@@ -189,7 +189,7 @@ class CardData:
 	func has_keyword(kw: String) -> bool:
 		return kw in keywords
 	
-	func clone() -> CardData:
+	func clone() : :
 		var c := CardData.new(id, name, rank, faction, power)
 		c.keywords = keywords.duplicate()
 		c.is_face_up = is_face_up
@@ -225,7 +225,7 @@ func _on_phase_started(phase: int, _subphase: int) -> void:
 ## If card has Blitz: emits blitz_eligible(card) for TurnManager
 ##
 ## CRITICAL: Does NOT validate combat eligibility — CombatResolver handles that.
-func deploy(player: int, card: CardData, zone: String) -> bool:
+func deploy(player: int, card, zone: String) -> bool:
 	if zone != ZONE_FRONTLINE and zone != ZONE_BACKLINE:
 		push_error("ZoneManager.deploy: Invalid deploy target zone: " + zone)
 		return false
@@ -269,7 +269,7 @@ func deploy(player: int, card: CardData, zone: String) -> bool:
 ## Emits: unit_moved, zone_changed, ability_zone_changed
 ##
 ## CRITICAL: Anchor blocks forced moves only — voluntary player-initiated moves are allowed.
-func move_unit(player: int, card: CardData, target_zone: String) -> bool:
+func move_unit(player: int, card, target_zone: String) -> bool:
 	var current_zone := get_unit_current_zone(player, card)
 	if current_zone == "":
 		push_error("ZoneManager.move_unit: Card not found in any zone for player %d" % player)
@@ -313,12 +313,12 @@ func move_unit(player: int, card: CardData, target_zone: String) -> bool:
 ## emits legacy_ability_activated for KeywordHandler
 ##
 ## CRITICAL: Legacy applies to Command abilities ONLY — never Frontline or Backline abilities.
-func advance_general(player: int, card: CardData) -> bool:
+func advance_general(player: int, card) -> bool:
 	if _general_stack[player].is_empty():
 		push_error("ZoneManager.advance_general: No General in stack to advance from")
 		return false
 	
-	var current_general: CardData = _general_stack[player].back()
+	var current_general = _general_stack[player].back()
 	if card.faction != current_general.faction:
 		push_error("ZoneManager.advance_general: Card faction %s does not match General faction %s" % [card.faction, current_general.faction])
 		return false
@@ -349,7 +349,7 @@ func advance_general(player: int, card: CardData) -> bool:
 ##
 ## CRITICAL: Surge triggers from Shield Zone entry ONLY — not from destroy_unit.
 ## CRITICAL: Reanimate can be permanently removed — check reanimate_removed flag per unit.
-func destroy_unit(player: int, card: CardData, zone: String) -> void:
+func destroy_unit(player: int, card, zone: String) -> void:
 	_zones[player][zone].erase(card)
 	
 	if card.has_keyword("Reanimate") and not card.reanimate_removed:
@@ -379,7 +379,7 @@ func destroy_unit(player: int, card: CardData, zone: String) -> void:
 		if _general_stack[player].is_empty():
 			emit_signal("general_destroyed", player)
 		else:
-			var new_general: CardData = _general_stack[player].back()
+			var new_general = _general_stack[player].back()
 			emit_signal("general_advanced", player, new_general.rank, new_general)
 	
 	if card.has_keyword("Devour"):
@@ -392,7 +392,7 @@ func destroy_unit(player: int, card: CardData, zone: String) -> void:
 ## They cannot become active General
 ## They are NOT removed by Dimensional Retreat
 ## Emit devour_completed for KeywordHandler to track
-func _handle_devour(player: int, card: CardData) -> void:
+func _handle_devour(player: int, card) -> void:
 	if _general_stack[player].is_empty():
 		push_error("ZoneManager._handle_devour: Cannot Devour with empty General stack")
 		return
@@ -421,7 +421,7 @@ func _untap_all_backline_units() -> void:
 ## Plays a Rift card, destroying the current Rift if one exists.
 ##
 ## Emits: rift_destroyed (if existing Rift), rift_played
-func play_rift(player: int, card: CardData) -> bool:
+func play_rift(player: int, card) -> bool:
 	if _active_rift != null:
 		_zones[player][ZONE_REMnant].append(_active_rift)
 		emit_signal("rift_destroyed", _active_rift)
@@ -445,7 +445,7 @@ func break_shield(player: int) -> bool:
 		push_error("ZoneManager.break_shield: No shields to break for player %d" % player)
 		return false
 	
-	var card: CardData = shields.pop_back()
+	var card = shields.pop_back()
 	var shields_remaining: int = shields.size()
 	
 	emit_signal("shield_broken", player, card, shields_remaining)
@@ -475,7 +475,7 @@ func spend_energy(player: int, amount: int) -> bool:
 		return false
 	
 	for i in range(amount):
-		var card: CardData = _zones[player][ZONE_ENERGY].pop_front()
+		var card = _zones[player][ZONE_ENERGY].pop_front()
 		_zones[player][ZONE_REMnant].append(card)
 	
 	emit_signal("energy_spent", player, amount)
@@ -505,7 +505,7 @@ func trigger_singularity(player: int) -> bool:
 #region PUBLIC API - DRAKESWORN BOND
 ## Handles Drake unit destruction — halves surviving partner's Power.
 ## Emit drakesworn_bond_broken for CombatResolver to apply Power reduction.
-func handle_drakesworn_bond_break(player: int, _destroyed_card: CardData, surviving_card: CardData) -> void:
+func handle_drakesworn_bond_break(player: int, _destroyed_card, surviving_card) -> void:
 	emit_signal("drakesworn_bond_broken", player, surviving_card)
 #endregion
 
@@ -514,7 +514,7 @@ func handle_drakesworn_bond_break(player: int, _destroyed_card: CardData, surviv
 ## Tapped units cannot respond to Reaction windows during opponent turn.
 ##
 ## Emits: unit_tapped
-func tap_backline_unit(player: int, card: CardData) -> bool:
+func tap_backline_unit(player: int, card) -> bool:
 	var zone: String = get_unit_current_zone(player, card)
 	if zone != ZONE_BACKLINE:
 		push_error("ZoneManager.tap_backline_unit: Card is not in backline")
@@ -548,13 +548,13 @@ func get_active_general_rank(player: int) -> int:
 	return _general_stack[player].back().rank
 
 ## Returns the active General card data.
-func get_active_general(player: int) -> CardData:
+func get_active_general(player: int) : :
 	if _general_stack[player].is_empty():
 		return null
 	return _general_stack[player].back()
 
 ## Returns current zone for a card, or empty string if not found.
-func get_unit_current_zone(player: int, card: CardData) -> String:
+func get_unit_current_zone(player: int, card) -> String:
 	for zone_name in [ZONE_FRONTLINE, ZONE_BACKLINE, ZONE_SHIELD, ZONE_ENERGY, ZONE_REMnant]:
 		if card in _zones[player][zone_name]:
 			return zone_name
@@ -562,7 +562,7 @@ func get_unit_current_zone(player: int, card: CardData) -> String:
 
 ## Returns the paired frontline CardData for a backline slot index.
 ## Returns null if no unit in that frontline slot.
-func get_paired_frontline_slot(player: int, backline_index: int) -> CardData:
+func get_paired_frontline_slot(player: int, backline_index: int) : :
 	var frontline: Array = _zones[player][ZONE_FRONTLINE]
 	if backline_index < 0 or backline_index >= frontline.size():
 		return null
@@ -590,21 +590,21 @@ func is_legal_deploy_target(zone: String) -> bool:
 	return zone == ZONE_FRONTLINE or zone == ZONE_BACKLINE
 
 ## Returns true if the card has the specified keyword.
-func has_keyword(card: CardData, keyword: String) -> bool:
+func has_keyword(card, keyword: String) -> bool:
 	return card != null and card.has_keyword(keyword)
 
 ## Returns true if card is in deployed_this_turn.
-func is_deployed_this_turn(player: int, card: CardData) -> bool:
+func is_deployed_this_turn(player: int, card) -> bool:
 	return card in _deployed_this_turn[player]
 
 ## Returns true if card is tapped in backline.
-func is_tapped_in_backline(player: int, card: CardData) -> bool:
+func is_tapped_in_backline(player: int, card) -> bool:
 	return card in _tapped_units[player]
 #endregion
 
 #region INITIALIZATION
 ## Initializes a player's General at Rank 1.
-func initialize_general(player: int, card: CardData) -> void:
+func initialize_general(player: int, card) -> void:
 	if not _general_stack[player].is_empty():
 		push_warning("ZoneManager.initialize_general: Overwriting existing General stack for player %d" % player)
 	_general_stack[player].clear()
@@ -624,7 +624,7 @@ func get_shield_count(player: int) -> int:
 	return _zones[player][ZONE_SHIELD].size()
 
 ## Returns the active Rift card.
-func get_active_rift() -> CardData:
+func get_active_rift() : :
 	return _active_rift
 
 ## Returns a copy of the General stack.

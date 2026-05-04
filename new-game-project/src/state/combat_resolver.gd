@@ -56,28 +56,28 @@ const PHASE_END := 6
 
 #region SIGNALS EMITTED
 ## Emitted when an attack is formally declared.
-## attack_declared(attacker: CardData, target_zone: String, target_player: int)
-signal attack_declared(attacker: CardData, target_zone: String, target_player: int)
+## attack_declared(attacker, target_zone: String, target_player: int)
+signal attack_declared(attacker, target_zone: String, target_player: int)
 
 ## Emitted when defending player confirms defender selection.
 ## defenders_chosen(defenders: Array[CardData])
 signal defenders_chosen(defenders: Array)
 
 ## Emitted when a Backline unit boosts its paired Frontline attacker.
-## boost_applied(attacker: CardData, backline_unit: CardData, boost_value: int)
-signal boost_applied(attacker: CardData, backline_unit: CardData, boost_value: int)
+## boost_applied(attacker, backline_unit, boost_value: int)
+signal boost_applied(attacker, backline_unit, boost_value: int)
 
 ## Emitted after Power comparison is complete.
 ## power_comparison_resolved(attacker_power: int, defense_power: int, attacker_wins: bool)
 signal power_comparison_resolved(attacker_power: int, defense_power: int, attacker_wins: bool)
 
 ## Emitted when the attacking unit is destroyed in combat.
-## attacker_destroyed(card: CardData)
-signal attacker_destroyed(card: CardData)
+## attacker_destroyed(card)
+signal attacker_destroyed(card)
 
 ## Emitted when a defending unit is destroyed in combat.
-## defender_destroyed(card: CardData)
-signal defender_destroyed(card: CardData)
+## defender_destroyed(card)
+signal defender_destroyed(card)
 
 ## Emitted when attack goes directly to General (zero defenders).
 ## general_attacked(target_player: int)
@@ -87,60 +87,60 @@ signal general_attacked(target_player: int)
 signal combat_resolved()
 
 ## Emitted when an Infiltrate attack is declared.
-## infiltrate_attack_declared(attacker: CardData, target_unit: CardData, target_player: int)
-signal infiltrate_attack_declared(attacker: CardData, target_unit: CardData, target_player: int)
+## infiltrate_attack_declared(attacker, target_unit, target_player: int)
+signal infiltrate_attack_declared(attacker, target_unit, target_player: int)
 
 ## Emitted when an Interceptor is deployed against an Infiltrate attack.
-## interceptor_deployed(player: int, interceptor: CardData)
-signal interceptor_deployed(player: int, interceptor: CardData)
+## interceptor_deployed(player: int, interceptor)
+signal interceptor_deployed(player: int, interceptor)
 
 ## Emitted when a unit gains Power from Bloodlust (permanent).
-## bloodlust_gained(player: int, card: CardData, new_power: int)
-signal bloodlust_gained(player: int, card: CardData, new_power: int)
+## bloodlust_gained(player: int, card, new_power: int)
+signal bloodlust_gained(player: int, card, new_power: int)
 
 ## Emitted when Void Pulse reduction is applied (temporary).
-## void_pulse_applied(player: int, card: CardData, reduction: int)
-signal void_pulse_applied(player: int, card: CardData, reduction: int)
+## void_pulse_applied(player: int, card, reduction: int)
+signal void_pulse_applied(player: int, card, reduction: int)
 
 ## Emitted when Void Pulse reduction expires.
-## void_pulse_expired(player: int, card: CardData)
-signal void_pulse_expired(player: int, card: CardData)
+## void_pulse_expired(player: int, card)
+signal void_pulse_expired(player: int, card)
 
 ## Emitted when Sovereign's Reign grants permanent Power.
-## sovereign_reign_applied(player: int, card: CardData, power_gain: int)
-signal sovereign_reign_applied(player: int, card: CardData, power_gain: int)
+## sovereign_reign_applied(player: int, card, power_gain: int)
+signal sovereign_reign_applied(player: int, card, power_gain: int)
 
 ## Emitted when Drunken Rage bonus expires at Phase 0.
-## drunken_rage_expired(player: int, card: CardData)
-signal drunken_rage_expired(player: int, card: CardData)
+## drunken_rage_expired(player: int, card)
+signal drunken_rage_expired(player: int, card)
 
 ## Emitted when an Overcharge unit is destroyed at end of turn.
-## overcharge_destroyed(player: int, card: CardData)
-signal overcharge_destroyed(player: int, card: CardData)
+## overcharge_destroyed(player: int, card)
+signal overcharge_destroyed(player: int, card)
 
 ## Emitted when Drakesworn Bond is broken — surviving unit Power halved.
-## drakesworn_bond_broken(player: int, surviving_card: CardData, new_power: int)
-signal drakesworn_bond_broken(player: int, surviving_card: CardData, new_power: int)
+## drakesworn_bond_broken(player: int, surviving_card, new_power: int)
+signal drakesworn_bond_broken(player: int, surviving_card, new_power: int)
 
 ## Emitted when Diamond League Lineup chain triggers.
-## lineup_chain_triggered(player: int, card: CardData, bonus: int)
-signal lineup_chain_triggered(player: int, card: CardData, bonus: int)
+## lineup_chain_triggered(player: int, card, bonus: int)
+signal lineup_chain_triggered(player: int, card, bonus: int)
 
 ## Emitted when Prophet/Prophecy predicts correctly.
-## prophecy_activated(player: int, card: CardData)
-signal prophecy_activated(player: int, card: CardData)
+## prophecy_activated(player: int, card)
+signal prophecy_activated(player: int, card)
 
 ## Emitted when Diamond League Relay applies bonus to all Frontline units.
 ## relay_bonus_applied(player: int, bonus: int)
 signal relay_bonus_applied(player: int, bonus: int)
 
 ## Emitted when Dominion blocks opponent's Burst — Reaction window.
-## dominion_activated(player: int, attacker: CardData)
-signal dominion_activated(player: int, attacker: CardData)
+## dominion_activated(player: int, attacker)
+signal dominion_activated(player: int, attacker)
 
 ## Emitted when Anchor blocks a forced move.
-## anchor_blocked_move(card: CardData)
-signal anchor_blocked_move(card: CardData)
+## anchor_blocked_move(card)
+signal anchor_blocked_move(card)
 #endregion
 
 #region STATE
@@ -301,28 +301,28 @@ func _on_turn_ended(player: int) -> void:
 	sentinel_units.clear()
 	previous_lineup_ability[player] = ""
 
-func _on_attack_declared_tm(attacker: CardData, defender: CardData) -> void:
+func _on_attack_declared_tm(attacker, defender) -> void:
 	current_attack.clear()
 #endregion
 
 #region ZONE MANAGER SIGNAL HANDLERS
-func _on_unit_deployed(player: int, card: CardData, zone: String) -> void:
+func _on_unit_deployed(player: int, card, zone: String) -> void:
 	if zone == "frontline" and card.has_keyword("Sentinel"):
 		pass
 
-func _on_unit_destroyed(player: int, card: CardData, zone: String) -> void:
+func _on_unit_destroyed(player: int, card, zone: String) -> void:
 	if current_attack.attacker != null and current_attack.attacker.id == card.id:
 		pass
 
-func _on_drakesworn_bond_broken(player: int, surviving_card: CardData) -> void:
+func _on_drakesworn_bond_broken(player: int, surviving_card) -> void:
 	resolve_drakesworn_power_halve(player, surviving_card)
 
-func _on_blitz_eligible(card: CardData) -> void:
+func _on_blitz_eligible(card) -> void:
 	pass
 #endregion
 
 #region SHIELD MANAGER SIGNAL HANDLERS
-func _on_shield_broken(player: int, _card: CardData, remaining: int) -> void:
+func _on_shield_broken(player: int, _card, remaining: int) -> void:
 	pass
 
 func _on_shields_depleted(player: int) -> void:
@@ -334,7 +334,7 @@ func _on_radiant_lattice_updated(player: int, bonus: int) -> void:
 func _on_warden_light_activated(player: int) -> void:
 	warden_light_active[player] = true
 
-func _on_tidal_veil_redirected(player: int, card: CardData, target_card: CardData) -> void:
+func _on_tidal_veil_redirected(player: int, card, target_card) -> void:
 	if current_attack.attacker != null and current_attack.attacker.id == card.id:
 		current_attack.attacker = target_card
 #endregion
@@ -347,10 +347,10 @@ func _on_sovereign_reign_resolved(player: int, conversions: Array) -> void:
 		if card_id != "" and power_gain > 0:
 			sovereign_reign_bonuses[card_id] = sovereign_reign_bonuses.get(card_id, 0) + power_gain
 
-func _on_drunken_rage_applied(player: int, card: CardData, power_bonus: int) -> void:
+func _on_drunken_rage_applied(player: int, card, power_bonus: int) -> void:
 	drunken_rage_bonuses[card.id] = power_bonus
 
-func _on_drunken_rage_expired(player: int, card: CardData) -> void:
+func _on_drunken_rage_expired(player: int, card) -> void:
 	drunken_rage_bonuses.erase(card.id)
 	emit_signal("drunken_rage_expired", player, card)
 
@@ -362,7 +362,7 @@ func _on_energy_spent(player: int, amount: int) -> void:
 ## Phase 5B — Frontline unit declares an attack.
 ## Validates attacker is in Frontline and untapped.
 ## Opens Burst — Reaction window before defenders chosen.
-func declare_attack(attacker: CardData, target_zone: String, target_player: int) -> bool:
+func declare_attack(attacker, target_zone: String, target_player: int) -> bool:
 	current_attack.attacker = attacker
 	current_attack.attacker_player = attacker.faction  ## Placeholder — use actual player
 	current_attack.target_zone = target_zone
@@ -387,11 +387,11 @@ func declare_attack(attacker: CardData, target_zone: String, target_player: int)
 	emit_signal("attack_declared", attacker, target_zone, target_player)
 	return true
 
-func _declare_infiltrate_attack(attacker: CardData, target_unit: CardData, target_player: int) -> void:
+func _declare_infiltrate_attack(attacker, target_unit, target_player: int) -> void:
 	emit_signal("infiltrate_attack_declared", attacker, target_unit, target_player)
 	current_attack.defenders = [target_unit]
 
-func _get_backline_target(target_player: int) -> CardData:
+func _get_backline_target(target_player: int) : :
 	if not has_node("/root/ZoneManager"):
 		return null
 	var zm = get_node("/root/ZoneManager")
@@ -443,7 +443,7 @@ func _apply_boost() -> void:
 	zm.tap_backline_unit(current_attack.attacker_player, backline_slot)
 
 ## DATA KINGDOM FACTION — Uplink amplification.
-func _resolve_uplink_amplification(backline_card: CardData) -> int:
+func _resolve_uplink_amplification(backline_card) -> int:
 	return 0
 
 ## Resolves direct attack to General when zero defenders chosen.
@@ -568,7 +568,7 @@ func _emit_combat_resolved() -> void:
 ## Bloodlust: +100 Power per kill — PERMANENT.
 ## CRITICAL: Bloodlust is permanent — never resets.
 ## Dragonfire kills do NOT trigger Bloodlust (not combat).
-func _resolve_bloodlust(attacker: CardData, destroyed_defender: CardData) -> void:
+func _resolve_bloodlust(attacker, destroyed_defender) -> void:
 	if not attacker.has_keyword("Bloodlust"):
 		return
 	bloodlust_gains[attacker.id] = bloodlust_gains.get(attacker.id, 0) + 100
@@ -577,19 +577,19 @@ func _resolve_bloodlust(attacker: CardData, destroyed_defender: CardData) -> voi
 
 ## Void Pulse: temporary Power reduction.
 ## Resets start of opponent's next turn.
-func resolve_void_pulse(player: int, target_card: CardData, reduction: int) -> void:
+func resolve_void_pulse(player: int, target_card, reduction: int) -> void:
 	void_pulse_reductions[target_card.id] = reduction
 	emit_signal("void_pulse_applied", player, target_card, reduction)
 
 ## Void Lock: target card cannot be played until your next turn.
-func resolve_void_lock(player: int, target_card: CardData) -> void:
+func resolve_void_lock(player: int, target_card) -> void:
 	if void_lock_count[player] >= MAX_VOID_LOCK_TARGETS:
 		return
 	void_lock_count[player] += 1
 	emit_signal("void_lock_applied", player, target_card)
 
 ## Diamond League Lineup chain.
-func resolve_lineup_chain(player: int, card: CardData) -> void:
+func resolve_lineup_chain(player: int, card) -> void:
 	var bonus = _calculate_lineup_bonus(card)
 	if card.has_keyword("Relay"):
 		emit_signal("relay_bonus_applied", player, bonus)
@@ -597,17 +597,17 @@ func resolve_lineup_chain(player: int, card: CardData) -> void:
 		emit_signal("lineup_chain_triggered", player, card, bonus)
 	previous_lineup_ability[player] = card.name
 
-func _calculate_lineup_bonus(card: CardData) -> int:
+func _calculate_lineup_bonus(card) -> int:
 	return 0
 
 ## Drakesworn Bond: surviving partner's Power halved.
-func resolve_drakesworn_power_halve(player: int, surviving_card: CardData) -> void:
+func resolve_drakesworn_power_halve(player: int, surviving_card) -> void:
 	var new_power: int = int(surviving_card.power / 2.0)
 	surviving_card.power = new_power
 	emit_signal("drakesworn_bond_broken", player, surviving_card, new_power)
 
 ## Dominion: block opponent's Burst — Reaction window.
-func resolve_dominion(player: int, attacker: CardData) -> void:
+func resolve_dominion(player: int, attacker) -> void:
 	emit_signal("dominion_activated", player, attacker)
 #endregion
 
@@ -620,7 +620,7 @@ func _break_shield(player: int) -> void:
 	zm.break_shield(player)
 
 ## Delegates unit destruction to ZoneManager.
-func _destroy_unit(player: int, card: CardData) -> void:
+func _destroy_unit(player: int, card) -> void:
 	if not has_node("/root/ZoneManager"):
 		return
 	var zone = _get_card_zone(player, card)
@@ -628,13 +628,13 @@ func _destroy_unit(player: int, card: CardData) -> void:
 		var zm = get_node("/root/ZoneManager")
 		zm.destroy_unit(player, card, zone)
 
-func _get_card_zone(player: int, card: CardData) -> String:
+func _get_card_zone(player: int, card) -> String:
 	if not has_node("/root/ZoneManager"):
 		return ""
 	var zm = get_node("/root/ZoneManager")
 	return zm.get_unit_current_zone(player, card)
 
-func _trigger_oathstrike(attacker: CardData) -> void:
+func _trigger_oathstrike(attacker) -> void:
 	if not has_node("/root/ShieldManager"):
 		return
 	var sm = get_node("/root/ShieldManager")
@@ -671,7 +671,7 @@ func reset_temporary_combat_effects() -> void:
 	drunken_rage_bonuses.clear()
 	sentinel_units.clear()
 
-func _get_card_by_id(card_id: String) -> CardData:
+func _get_card_by_id(card_id: String) : :
 	return null
 #endregion
 

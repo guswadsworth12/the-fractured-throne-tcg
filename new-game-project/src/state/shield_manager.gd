@@ -33,18 +33,18 @@ class_name ShieldManager
 #endregion
 
 #region SIGNALS EMITTED
-signal shield_broken(player: int, card: CardData, shields_remaining: int)
+signal shield_broken(player: int, card, shields_remaining: int)
 signal shields_depleted(player: int)
-signal surge_triggered(player: int, card: CardData)
-signal pierce_shield_broken(target_player: int, attacker: CardData)
-signal lifesteal_triggered(attacking_player: int, attacker: CardData, target_player: int)
-signal oathstrike_triggered(player: int, card: CardData)
-signal radiant_barrier_activated(player: int, card: CardData, energy_cost: int)
+signal surge_triggered(player: int, card)
+signal pierce_shield_broken(target_player: int, attacker)
+signal lifesteal_triggered(attacking_player: int, attacker, target_player: int)
+signal oathstrike_triggered(player: int, card)
+signal radiant_barrier_activated(player: int, card, energy_cost: int)
 signal warden_light_activated(player: int)
 signal radiant_lattice_updated(player: int, bonus: int)
-signal upwelling_triggered(player: int, card: CardData)
+signal upwelling_triggered(player: int, card)
 signal shields_this_turn_updated(player: int, count: int)
-signal tidal_veil_redirected(player: int, card: CardData, target_card: CardData)
+signal tidal_veil_redirected(player: int, card, target_card)
 signal warden_light_expired(player: int)
 #endregion
 
@@ -126,7 +126,7 @@ func _delayed_turn_manager_connect() -> void:
 #endregion
 
 #region ZONE MANAGER SIGNAL HANDLERS
-func _on_zone_shield_broken(player: int, card: CardData, remaining: int) -> void:
+func _on_zone_shield_broken(player: int, card, remaining: int) -> void:
 	shields_remaining[player] = maxi(0, remaining)
 	shields_broken_this_turn[player] += 1
 	emit_signal("shields_this_turn_updated", player, shields_broken_this_turn[player])
@@ -137,7 +137,7 @@ func _on_zone_shield_broken(player: int, card: CardData, remaining: int) -> void
 		emit_signal("shields_depleted", player)
 	recalculate_radiant_lattice(player)
 
-func _on_zone_unit_destroyed(_player: int, _card: CardData, _zone: String) -> void:
+func _on_zone_unit_destroyed(_player: int, _card, _zone: String) -> void:
 	pass
 
 func _on_zone_changed(player: int, zone_name: String, _contents: Array) -> void:
@@ -162,7 +162,7 @@ func _on_end_phase_started() -> void:
 func _on_turn_ended(player: int) -> void:
 	reset_turn_tracking(player)
 
-func _on_attack_declared(_attacker: CardData, _defender: CardData) -> void:
+func _on_attack_declared(_attacker, _defender) -> void:
 	pierce_triggered_this_attack = false
 #endregion
 
@@ -172,7 +172,7 @@ func request_shield_break(player: int) -> bool:
 		return false
 	return true
 
-func resolve_pierce(attacker: CardData, target_player: int) -> void:
+func resolve_pierce(attacker, target_player: int) -> void:
 	if pierce_triggered_this_attack:
 		return
 	if shields_remaining[target_player] <= 0:
@@ -184,12 +184,12 @@ func resolve_pierce(attacker: CardData, target_player: int) -> void:
 	if has_node("/root/ZoneManager"):
 		get_node("/root/ZoneManager").break_shield(target_player)
 
-func resolve_lifesteal(attacker: CardData, target_player: int, attacking_player: int) -> void:
+func resolve_lifesteal(attacker, target_player: int, attacking_player: int) -> void:
 	if not attacker.has_keyword("Lifesteal"):
 		return
 	emit_signal("lifesteal_triggered", attacking_player, attacker, target_player)
 
-func resolve_oathstrike(player: int, card: CardData) -> void:
+func resolve_oathstrike(player: int, card) -> void:
 	if shields_remaining[player] >= 6:
 		return
 	if not card.has_keyword("Oathstrike"):
@@ -200,7 +200,7 @@ func on_shield_added(player: int) -> void:
 	shields_remaining[player] = mini(shields_remaining[player] + 1, 6)
 	recalculate_radiant_lattice(player)
 
-func resolve_radiant_barrier(player: int, card: CardData, energy_cost: int) -> void:
+func resolve_radiant_barrier(player: int, card, energy_cost: int) -> void:
 	emit_signal("radiant_barrier_activated", player, card, energy_cost)
 
 func resolve_warden_light(player: int) -> void:
@@ -211,14 +211,14 @@ func recalculate_radiant_lattice(player: int) -> void:
 	var bonus: int = mini(face_down_count * 100, 400)
 	emit_signal("radiant_lattice_updated", player, bonus)
 
-func resolve_upwelling(player: int, card: CardData) -> void:
+func resolve_upwelling(player: int, card) -> void:
 	if shields_broken_this_turn[player] == 0:
 		return
 	if not card.has_keyword("Upwelling"):
 		return
 	emit_signal("upwelling_triggered", player, card)
 
-func resolve_tidal_veil(player: int, card: CardData, target_card: CardData) -> void:
+func resolve_tidal_veil(player: int, card, target_card) -> void:
 	emit_signal("tidal_veil_redirected", player, card, target_card)
 #endregion
 
